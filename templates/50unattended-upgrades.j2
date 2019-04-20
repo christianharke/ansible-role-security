@@ -8,12 +8,28 @@ Unattended-Upgrade::MailOnlyOnError "true";
 {% endif %}
 {% endif %}
 
-Unattended-Upgrade::Allowed-Origins {
-        "${distro_id} ${distro_codename}-security";
-//      "${distro_id} ${distro_codename}-updates";
+Unattended-Upgrade::Origins-Pattern {
+        // Codename based matching:
+        // This will follow the migration of a release through different
+        // archives (e.g. from testing to stable and later oldstable).
+        // Software will be the latest available for the named release,
+        // but the Debian release itself will not be automatically upgraded.
+//      "origin=Debian,codename=${distro_codename}-updates";
+//      "origin=Debian,codename=${distro_codename}-proposed-updates";
+        "origin=Debian,codename=${distro_codename},label=Debian";
+        "origin=Debian,codename=${distro_codename},label=Debian-Security";
+
+        // Archive or Suite based matching:
+        // Note that this will silently match a different release after
+        // migration to the specified archive (e.g. testing becomes the
+        // new stable).
+//      "o=Debian,a=stable";
+//      "o=Debian,a=stable-updates";
+//      "o=Debian,a=proposed-updates";
+//      "o=Debian Backports,a=${distro_codename}-backports,l=Debian Backports";
 };
 
-Unattended-Upgrade::Package-Blacklist{
+Unattended-Upgrade::Package-Blacklist {
 {% for package in security_autoupdate_blacklist %}
       "{{package}}";
 {% endfor %}
